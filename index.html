@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitation Playbook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+
+        .settings-row > div {
+            flex: 1;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .exercise-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .exercise-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .exercise-time {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+
+        .exercise-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .exercise-instructions {
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .match-score {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .error {
+            background: #ff5252;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        .total-time-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            color: #e65100;
+            font-weight: 600;
+        }
+
+        .theme-filters {
+            margin-bottom: 15px;
+        }
+
+        .theme-filter {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .theme-filter:hover {
+            background: #e0e0e0;
+        }
+
+        .theme-filter.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .filters-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .filters-section.show {
+            display: block;
+        }
+
+        .toggle-filters {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            width: auto;
+        }
+
+        .toggle-filters:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .keyboard-hint {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .search-section, header {
+                display: none;
+            }
+            .exercise-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .settings-row {
+                flex-direction: column;
+            }
+
+            .exercise-header {
+                flex-direction: column;
+            }
+
+            .exercise-time {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Facilitation Playbook</h1>
+            <p class="subtitle">Describe what you need and discover the perfect exercises</p>
+        </header>
+
+        <div class="search-section">
+            <div class="info-box">
+                <strong>Note:</strong> This tool uses OpenAI's GPT model to understand your needs. You'll need an OpenAI API key to use it.
+                Get one at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>
+            </div>
+
+            <div class="input-group">
+                <label for="query">What do you need help with?</label>
+                <textarea
+                    id="query"
+                    placeholder="Examples:
+• 'I need an exercise to help my team build empathy and understand different perspectives'
+• 'Looking for a quick icebreaker for a remote team meeting'
+• 'Help with decision-making and prioritization for our product roadmap'
+• 'Team building activity to improve collaboration and communication'
+• 'Reflection exercise for end of year or project retrospective'"></textarea>
+                <div class="keyboard-hint">💡 Tip: Press Enter to search (Shift+Enter for new line)</div>
+            </div>
+
+            <button class="toggle-filters" onclick="toggleFilters()">🔍 Filter by Theme</button>
+
+            <div id="filtersSection" class="filters-section">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Filter by themes (click to toggle):</label>
+                <div id="themeFilters" class="theme-filters"></div>
+            </div>
+
+            <div class="settings-row">
+                <div>
+                    <label for="apiKey">OpenAI API Key</label>
+                    <input type="text" id="apiKey" placeholder="sk-..." />
+                </div>
+                <div style="max-width: 150px;">
+                    <label for="numResults">Results</label>
+                    <input type="number" id="numResults" value="5" min="1" max="10" />
+                </div>
+            </div>
+
+            <button id="searchBtn" onclick="searchExercises()">Find Exercises</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div>Analyzing your request...</div>
+        </div>
+
+        <div id="error" style="display: none;"></div>
+
+        <div id="totalTime" style="display: none;"></div>
+
+        <div id="printButton" style="display: none; text-align: center; margin-bottom: 20px;">
+            <button onclick="window.print()" style="width: auto; background: #4caf50;">
+                🖨️ Print Results
+            </button>
+        </div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        let exercisesData = null;
+        let selectedThemes = [];
+        let currentResults = [];
+
+        // Load the data
+        fetch('facilitation_data.json')
+            .then(response => response.json())
+            .then(data => {
+                exercisesData = data;
+                console.log('Loaded', data.exercises.length, 'exercises');
+                initializeThemeFilters();
+            })
+            .catch(error => {
+                showError('Failed to load exercise data: ' + error.message);
+            });
+
+        function initializeThemeFilters() {
+            if (!exercisesData) return;
+
+            const filtersDiv = document.getElementById('themeFilters');
+            exercisesData.themes.forEach(theme => {
+                if (!theme) return;
+                const filterBtn = document.createElement('span');
+                filterBtn.className = 'theme-filter';
+                filterBtn.textContent = theme;
+                filterBtn.onclick = () => toggleTheme(theme, filterBtn);
+                filtersDiv.appendChild(filterBtn);
+            });
+        }
+
+        function toggleFilters() {
+            const filtersSection = document.getElementById('filtersSection');
+            filtersSection.classList.toggle('show');
+        }
+
+        function toggleTheme(theme, element) {
+            const index = selectedThemes.indexOf(theme);
+            if (index > -1) {
+                selectedThemes.splice(index, 1);
+                element.classList.remove('active');
+            } else {
+                selectedThemes.push(theme);
+                element.classList.add('active');
+            }
+
+            // Re-filter current results if we have any
+            if (currentResults.length > 0) {
+                displayResults(currentResults, true);
+            }
+        }
+
+        function filterResultsByThemes(results) {
+            if (selectedThemes.length === 0) return results;
+
+            return results.filter(match => {
+                const exerciseTags = match.exercise.tags || [];
+                return selectedThemes.some(theme => exerciseTags.includes(theme));
+            });
+        }
+
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+
+        function calculateTotalTime(matches) {
+            // Parse time estimates and calculate total
+            let totalMinutes = 0;
+            let hasEstimates = false;
+
+            matches.forEach(match => {
+                const timeStr = match.estimated_time;
+                const numbers = timeStr.match(/\d+/g);
+                if (numbers && numbers.length > 0) {
+                    // Take the average of min-max or just the single value
+                    const avg = numbers.length > 1
+                        ? (parseInt(numbers[0]) + parseInt(numbers[1])) / 2
+                        : parseInt(numbers[0]);
+                    totalMinutes += avg;
+                    hasEstimates = true;
+                }
+            });
+
+            return hasEstimates ? Math.round(totalMinutes) : null;
+        }
+
+        // Load API key from localStorage
+        window.addEventListener('load', () => {
+            const savedKey = localStorage.getItem('openai_api_key');
+            if (savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `<div class="error">${message}</div>`;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        async function searchExercises() {
+            const query = document.getElementById('query').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const numResults = parseInt(document.getElementById('numResults').value);
+
+            if (!query) {
+                showError('Please describe what you need help with.');
+                return;
+            }
+
+            if (!apiKey) {
+                showError('Please enter your OpenAI API key.');
+                return;
+            }
+
+            if (!exercisesData) {
+                showError('Exercise data is still loading. Please try again.');
+                return;
+            }
+
+            // Save API key
+            localStorage.setItem('openai_api_key', apiKey);
+
+            // Hide previous results and errors
+            hideError();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('searchBtn').disabled = true;
+
+            try {
+                // Use OpenAI to analyze the query and match exercises
+                const matches = await findMatchingExercises(query, apiKey, numResults);
+                currentResults = matches;
+                displayResults(matches);
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('searchBtn').disabled = false;
+            }
+        }
+
+        async function findMatchingExercises(query, apiKey, numResults) {
+            // Create a condensed version of exercises for the AI
+            const exercisesSummary = exercisesData.exercises.map((ex, idx) => {
+                const title = ex.name.split('\n')[0];
+                return {
+                    id: idx,
+                    title: title,
+                    tags: ex.tags,
+                    preview: ex.name.substring(0, 500)
+                };
+            });
+
+            const prompt = `You are a facilitation expert. A user needs help finding the right exercises for their situation.
+
+User's request: "${query}"
+
+Available themes: ${exercisesData.themes.join(', ')}
+
+Here are the available exercises (${exercisesSummary.length} total). Each has a title, tags, and preview:
+
+${JSON.stringify(exercisesSummary.slice(0, 100), null, 2)}
+
+Please analyze the user's request and return the ${numResults} most relevant exercise IDs that would best match their needs. Consider:
+1. The specific problem or goal they're trying to address
+2. The themes/tags that align with their needs
+3. The context (team size, setting, etc.) if mentioned
+
+Return a JSON object with a "matches" key containing an array of exercises:
+{
+  "matches": [
+    {
+      "id": <exercise_id>,
+      "relevance_score": <0-100>,
+      "reason": "<brief explanation of why this is a good match>",
+      "estimated_time": "<estimate like '15-20 min' or '45-60 min'>"
+    }
+  ]
+}
+
+Base the estimated time on the exercise description and complexity.`;
+
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are a helpful facilitation expert. Always respond with valid JSON only. Do not include markdown formatting, explanations, or any text outside the JSON array.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'OpenAI API request failed');
+            }
+
+            const data = await response.json();
+            let content = data.choices[0].message.content;
+
+            // Extract JSON from markdown code blocks if present
+            const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+            if (jsonMatch) {
+                content = jsonMatch[1];
+            }
+
+            // Clean up any remaining markdown or whitespace
+            content = content.trim();
+
+            // Parse the JSON response with better error handling
+            let parsed;
+            try {
+                parsed = JSON.parse(content);
+            } catch (parseError) {
+                console.error('JSON Parse Error:', parseError);
+                console.error('Content received:', content);
+                throw new Error('Failed to parse AI response. The AI returned invalid JSON. Please try again.');
+            }
+
+            // Extract matches array from response (handles both array and object formats)
+            let matches;
+            if (Array.isArray(parsed)) {
+                matches = parsed;
+            } else if (parsed.matches && Array.isArray(parsed.matches)) {
+                matches = parsed.matches;
+            } else if (parsed.results && Array.isArray(parsed.results)) {
+                matches = parsed.results;
+            } else {
+                console.error('Unexpected response format:', parsed);
+                throw new Error('AI response was not in the expected format. Please try again.');
+            }
+
+            // Enrich with full exercise data and validate
+            return matches
+                .filter(match => {
+                    // Validate that the exercise ID exists
+                    if (!exercisesData.exercises[match.id]) {
+                        console.warn(`Invalid exercise ID: ${match.id}`);
+                        return false;
+                    }
+                    return true;
+                })
+                .map(match => {
+                    const exercise = exercisesData.exercises[match.id];
+                    return {
+                        ...match,
+                        exercise: exercise
+                    };
+                });
+        }
+
+        function displayResults(matches, isRefiltering = false) {
+            const resultsDiv = document.getElementById('results');
+            const totalTimeDiv = document.getElementById('totalTime');
+
+            // Apply theme filters if any are selected
+            const filteredMatches = filterResultsByThemes(matches);
+
+            if (filteredMatches.length === 0) {
+                resultsDiv.innerHTML = '<div class="exercise-card"><p>No matching exercises found. Try rephrasing your request or adjusting your theme filters.</p></div>';
+                resultsDiv.classList.add('show');
+                totalTimeDiv.style.display = 'none';
+                document.getElementById('printButton').style.display = 'none';
+                return;
+            }
+
+            // Calculate and display total time
+            const totalMinutes = calculateTotalTime(filteredMatches);
+            if (totalMinutes) {
+                const hours = Math.floor(totalMinutes / 60);
+                const mins = totalMinutes % 60;
+                const timeStr = hours > 0
+                    ? `${hours}h ${mins}m`
+                    : `${mins} min`;
+                totalTimeDiv.innerHTML = `<div class="total-time-box">⏱️ Estimated Total Time: ${timeStr} (${filteredMatches.length} exercise${filteredMatches.length > 1 ? 's' : ''})</div>`;
+                totalTimeDiv.style.display = 'block';
+            } else {
+                totalTimeDiv.style.display = 'none';
+            }
+
+            const html = filteredMatches.map((match, idx) => {
+                const exercise = match.exercise;
+                const title = exercise.name.split('\n')[0];
+                const instructions = exercise.name;
+                const cardId = `exercise-${idx}`;
+
+                return `
+                    <div class="exercise-card" id="${cardId}">
+                        <div class="exercise-header">
+                            <div class="exercise-title">
+                                ${idx + 1}. ${escapeHtml(title)}
+                                <span class="match-score">${match.relevance_score}% match</span>
+                            </div>
+                            <div class="exercise-time">${escapeHtml(match.estimated_time)}</div>
+                        </div>
+                        ${exercise.tags.length > 0 ? `
+                            <div class="exercise-tags">
+                                ${exercise.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="color: #666; font-size: 0.95em; margin-bottom: 10px;">
+                            <strong>Why this matches:</strong> ${escapeHtml(match.reason)}
+                        </div>
+                        <details>
+                            <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">📋 View Instructions</summary>
+                            <div class="exercise-instructions">${escapeHtml(instructions)}</div>
+                            <button class="copy-btn" onclick="copyToClipboard(\`${escapeHtml(instructions).replace(/`/g, '\\`')}\`, this)">
+                                📋 Copy Instructions
+                            </button>
+                        </details>
+                    </div>
+                `;
+            }).join('');
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.add('show');
+
+            // Show print button
+            document.getElementById('printButton').style.display = 'block';
+
+            // Scroll to results
+            if (!isRefiltering) {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Allow Enter key to search (with Shift+Enter for new line)
+        document.getElementById('query').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                searchExercises();
+            }
+        });
+    </script>
+</body>
+</html>
