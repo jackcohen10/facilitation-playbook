@@ -1,0 +1,7 @@
+{
+  "name": "facilitation-playbook",
+  "version": "1.0.0",
+  "description": "AI-powered facilitation exercise finder",
+  "private": true,
+  "type": "module"
+}
