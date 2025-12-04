@@ -1,4 +1,9 @@
 {
   "version": 2,
-  "name": "facilitation-playbook"
+  "name": "facilitation-playbook",
+  "functions": {
+    "api/search.js": {
+      "maxDuration": 30
+    }
+  }
 }
